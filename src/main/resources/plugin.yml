@@ -1,0 +1,5 @@
+name: AFKProtection
+version: '1.0-SNAPSHOT'
+main: me.Gizzarduhh.afkProtection.AFKProtection
+api-version: '1.21'
+depend: [LuckPerms]

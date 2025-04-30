@@ -1,0 +1,14 @@
+afk:
+  timer: 120
+  damage: true
+  target: false
+
+messages:
+  enabled: true
+  +afk: " has gone afk"
+  -afk: " has returned"
+
+prefix:
+  enabled: true
+  value: "[AFK]"
+  weight: 1
