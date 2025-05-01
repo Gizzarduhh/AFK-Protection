@@ -1,7 +1,5 @@
 afk:
   timer: 120
-  damage: true
-  target: false
 
 messages:
   enabled: true

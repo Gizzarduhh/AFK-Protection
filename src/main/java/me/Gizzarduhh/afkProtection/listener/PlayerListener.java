@@ -6,11 +6,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
 
@@ -18,6 +16,12 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(AFKProtection plugin)
     {this.plugin = plugin;}
+
+    @EventHandler
+    void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity().getType() == EntityType.PLAYER && plugin.isAFK((Player) event.getEntity()))
+            event.setCancelled(true);
+    }
 
     @EventHandler
     void onEntityTarget(EntityTargetEvent event) {
@@ -31,22 +35,27 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    void onPlayerMove(PlayerMoveEvent event){
+    void onPlayerInput(PlayerInputEvent event){
+        plugin.resetAfkTimer(event.getPlayer());
+    }
+
+    @EventHandler
+    void onPlayerInteract(PlayerInteractEvent event){
         plugin.resetAfkTimer(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerJoin(PlayerJoinEvent event){
-        plugin.removeKey(event.getPlayer());
+        plugin.clearData(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerQuit(PlayerQuitEvent event){
-        plugin.removeKey(event.getPlayer());
+        plugin.clearData(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerKick(PlayerKickEvent event){
-        plugin.removeKey(event.getPlayer());
+        plugin.clearData(event.getPlayer());
     }
 }

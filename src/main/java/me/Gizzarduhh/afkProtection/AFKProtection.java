@@ -18,8 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class AFKProtection extends JavaPlugin {
 
     private final NamespacedKey AFK_TIMER_KEY = new NamespacedKey(this, "afk_timer");
-    private int afkTimer;
     private LuckPerms luckPerms;
+    private int afkTimer;
 
     @Override
     public void onEnable() {
@@ -39,15 +39,41 @@ public final class AFKProtection extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getServer().getOnlinePlayers().forEach(this::removeKey);
+        getServer().getOnlinePlayers().forEach(this::clearData);
     }
 
-    public void removeKey(Player player) {
+    public void addPrefix(Player player) {
+        if (getConfig().getBoolean("prefix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().add(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
+    }
+
+    public void removePrefix(Player player) {
+        if (getConfig().getBoolean("prefix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().remove(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
+    }
+
+    public void clearData(Player player) {
         player.getPersistentDataContainer().remove(AFK_TIMER_KEY);
+        removePrefix(player);
     }
 
     public boolean isAFK(Player player) {
         return player.getPersistentDataContainer().getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) > afkTimer;
+    }
+
+    public void resetAfkTimer(Player player) {
+        if (isAFK(player)) {
+            removePrefix(player);
+            if (getConfig().getBoolean("messages.enabled"))
+                getServer().broadcast(Component.text(player.getName() + getConfig().getString("messages.-afk")).color(NamedTextColor.YELLOW));
+        }
+        player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0);
     }
 
     public void updateAfkTimer(Player player) {
@@ -55,28 +81,13 @@ public final class AFKProtection extends JavaPlugin {
 
         if (!isAFK(player)) {
             pdc.set(AFK_TIMER_KEY, PersistentDataType.INTEGER, pdc.getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) + 1);
+
+            // If not AFK before, are you now?
             if (isAFK(player)) {
+                addPrefix(player);
                 if (getConfig().getBoolean("messages.enabled"))
                      getServer().broadcast(Component.text(player.getName() + getConfig().getString("messages.+afk")).color(NamedTextColor.YELLOW));
-                if (getConfig().getBoolean("prefix.enabled")) {
-                    User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-                    user.data().add(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
-                    luckPerms.getUserManager().saveUser(user);
-                }
             }
         }
-    }
-
-    public void resetAfkTimer(Player player) {
-        if (isAFK(player)) {
-            if (getConfig().getBoolean("messages.enabled"))
-                getServer().broadcast(Component.text(player.getName() + getConfig().getString("messages.-afk")).color(NamedTextColor.YELLOW));
-            if (getConfig().getBoolean("prefix.enabled")) {
-                User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-                user.data().remove(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
-                luckPerms.getUserManager().saveUser(user);
-            }
-        }
-        player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0);
     }
 }
