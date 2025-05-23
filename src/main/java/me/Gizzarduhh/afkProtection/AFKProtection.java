@@ -4,32 +4,33 @@ import me.Gizzarduhh.afkProtection.listener.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.PrefixNode;
-import org.bukkit.Bukkit;
+import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public final class AFKProtection extends JavaPlugin {
 
     private final NamespacedKey AFK_TIMER_KEY = new NamespacedKey(this, "afk_timer");
+    private Configuration config;
     private LuckPerms luckPerms;
-    private int afkTimer;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         saveDefaultConfig();
-        afkTimer = getConfig().getInt("afk.timer");
+        config = getConfig();
 
         // LuckPerms API
-        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null) luckPerms = provider.getProvider();
+        if (getServer().getPluginManager().isPluginEnabled("LuckPerms"))
+            luckPerms = LuckPermsProvider.get();
 
         // Listener and Timer Schedule
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -42,41 +43,51 @@ public final class AFKProtection extends JavaPlugin {
         getServer().getOnlinePlayers().forEach(this::clearData);
     }
 
-    public void addPrefix(Player player) {
-        if (getConfig().getBoolean("prefix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().add(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
-    }
-
-    public void removePrefix(Player player) {
-        if (getConfig().getBoolean("prefix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().remove(PrefixNode.builder(getConfig().getString("prefix.value", ""),getConfig().getInt("prefix.weight")).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
-    }
-
     public void clearData(Player player) {
         player.getPersistentDataContainer().remove(AFK_TIMER_KEY);
-        removePrefix(player);
+        removeTag(player);
+    }
+
+    public void addTag(Player player) {
+        if (config.getBoolean("prefix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().add(PrefixNode.builder(config.getString("prefix.value", ""),config.getInt("prefix.weight")).value(true).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
+        if (config.getBoolean("suffix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().add(SuffixNode.builder(config.getString("suffix.value", ""),config.getInt("suffix.weight")).value(true).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
+    }
+
+    public void removeTag(Player player) {
+        if (config.getBoolean("prefix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().remove(PrefixNode.builder(config.getString("prefix.value", ""),config.getInt("prefix.weight")).value(true).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
+        if (config.getBoolean("suffix.enabled")) {
+            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+            user.data().remove(SuffixNode.builder(config.getString("suffix.value", ""),config.getInt("suffix.weight")).value(true).build());
+            luckPerms.getUserManager().saveUser(user);
+        }
     }
 
     public boolean isAFK(Player player) {
-        return player.getPersistentDataContainer().getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) > afkTimer;
+        return player.getPersistentDataContainer().getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) > config.getInt("afk.timer");
     }
 
-    public void resetAfkTimer(Player player) {
+    public void resetAfkTime(Player player) {
         if (isAFK(player)) {
-            removePrefix(player);
-            if (getConfig().getBoolean("messages.enabled"))
-                getServer().broadcast(Component.text(player.getName() + getConfig().getString("messages.-afk")).color(NamedTextColor.YELLOW));
+            removeTag(player);
+            if (config.getBoolean("messages.enabled"))
+                getServer().broadcast(Component.text(player.getName() + config.getString("messages.-afk")).color(NamedTextColor.YELLOW));
         }
         player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0);
     }
 
-    public void updateAfkTimer(Player player) {
+    public void updateAfkTime(Player player) {
         PersistentDataContainer pdc = player.getPersistentDataContainer();
 
         if (!isAFK(player)) {
@@ -84,9 +95,9 @@ public final class AFKProtection extends JavaPlugin {
 
             // If not AFK before, are you now?
             if (isAFK(player)) {
-                addPrefix(player);
-                if (getConfig().getBoolean("messages.enabled"))
-                     getServer().broadcast(Component.text(player.getName() + getConfig().getString("messages.+afk")).color(NamedTextColor.YELLOW));
+                addTag(player);
+                if (config.getBoolean("messages.enabled"))
+                     getServer().broadcast(Component.text(player.getName() + config.getString("messages.+afk")).color(NamedTextColor.YELLOW));
             }
         }
     }

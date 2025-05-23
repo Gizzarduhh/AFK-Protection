@@ -31,17 +31,17 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onPlayerChat(AsyncChatEvent event){
-        plugin.resetAfkTimer(event.getPlayer());
+        plugin.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerInput(PlayerInputEvent event){
-        plugin.resetAfkTimer(event.getPlayer());
+        plugin.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerInteract(PlayerInteractEvent event){
-        plugin.resetAfkTimer(event.getPlayer());
+        plugin.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler

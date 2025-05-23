@@ -8,6 +8,6 @@ public class AFKTimer implements Runnable {
     {this.plugin = plugin;}
 
     public void run() {
-        plugin.getServer().getOnlinePlayers().forEach(plugin::updateAfkTimer);
+        plugin.getServer().getOnlinePlayers().forEach(plugin::updateAfkTime);
     }
 }
