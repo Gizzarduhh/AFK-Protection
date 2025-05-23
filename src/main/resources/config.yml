@@ -1,3 +1,4 @@
+# AFK Protection configuration
 afk:
   timer: 120
 
@@ -6,6 +7,8 @@ messages:
   +afk: " has gone afk"
   -afk: " has returned"
 
+
+# Below options require LuckPerms
 prefix:
   enabled: false
   value: "[AFK]"

@@ -1,13 +1,9 @@
 package me.Gizzarduhh.afkProtection;
 
+import me.Gizzarduhh.afkProtection.hook.LuckPermsAPI;
 import me.Gizzarduhh.afkProtection.listener.PlayerListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.types.PrefixNode;
-import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -19,8 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class AFKProtection extends JavaPlugin {
 
     private final NamespacedKey AFK_TIMER_KEY = new NamespacedKey(this, "afk_timer");
+    private LuckPermsAPI luckPermsAPI;
     private Configuration config;
-    private LuckPerms luckPerms;
 
     @Override
     public void onEnable() {
@@ -30,9 +26,9 @@ public final class AFKProtection extends JavaPlugin {
 
         // LuckPerms API
         if (getServer().getPluginManager().isPluginEnabled("LuckPerms"))
-            luckPerms = LuckPermsProvider.get();
+            luckPermsAPI = new LuckPermsAPI(this);
 
-        // Listener and Timer Schedule
+        // Listener and Timer
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new AFKTimer(this), 20, 20);
     }
@@ -45,33 +41,17 @@ public final class AFKProtection extends JavaPlugin {
 
     public void clearData(Player player) {
         player.getPersistentDataContainer().remove(AFK_TIMER_KEY);
-        removeTag(player);
+        removeLuckPermsTags(player);
     }
 
-    public void addTag(Player player) {
-        if (config.getBoolean("prefix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().add(PrefixNode.builder(config.getString("prefix.value", ""),config.getInt("prefix.weight")).value(true).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
-        if (config.getBoolean("suffix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().add(SuffixNode.builder(config.getString("suffix.value", ""),config.getInt("suffix.weight")).value(true).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
+    public void addLuckPermsTags(Player player) {
+        if (luckPermsAPI != null)
+            luckPermsAPI.addTags(player);
     }
 
-    public void removeTag(Player player) {
-        if (config.getBoolean("prefix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().remove(PrefixNode.builder(config.getString("prefix.value", ""),config.getInt("prefix.weight")).value(true).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
-        if (config.getBoolean("suffix.enabled")) {
-            User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-            user.data().remove(SuffixNode.builder(config.getString("suffix.value", ""),config.getInt("suffix.weight")).value(true).build());
-            luckPerms.getUserManager().saveUser(user);
-        }
+    public void removeLuckPermsTags(Player player) {
+        if (luckPermsAPI != null)
+            luckPermsAPI.removeTags(player);
     }
 
     public boolean isAFK(Player player) {
@@ -80,7 +60,7 @@ public final class AFKProtection extends JavaPlugin {
 
     public void resetAfkTime(Player player) {
         if (isAFK(player)) {
-            removeTag(player);
+            removeLuckPermsTags(player);
             if (config.getBoolean("messages.enabled"))
                 getServer().broadcast(Component.text(player.getName() + config.getString("messages.-afk")).color(NamedTextColor.YELLOW));
         }
@@ -95,10 +75,11 @@ public final class AFKProtection extends JavaPlugin {
 
             // If not AFK before, are you now?
             if (isAFK(player)) {
-                addTag(player);
+                addLuckPermsTags(player);
                 if (config.getBoolean("messages.enabled"))
-                     getServer().broadcast(Component.text(player.getName() + config.getString("messages.+afk")).color(NamedTextColor.YELLOW));
+                    getServer().broadcast(Component.text(player.getName() + config.getString("messages.+afk")).color(NamedTextColor.YELLOW));
             }
         }
     }
 }
+
