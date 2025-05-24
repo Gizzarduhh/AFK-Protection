@@ -1,5 +1,5 @@
 name: AFKProtection
-version: '1.0-SNAPSHOT'
+version: '1.0'
 main: me.Gizzarduhh.afkProtection.AFKProtection
 api-version: '1.21'
 softdepend: [LuckPerms]

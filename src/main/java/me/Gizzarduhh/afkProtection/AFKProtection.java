@@ -54,30 +54,49 @@ public final class AFKProtection extends JavaPlugin {
             luckPermsAPI.removeTags(player);
     }
 
+    public void broadcastAFKStatus(Player player) {
+        if (config.getBoolean("messages.enabled")) {
+            if (isAFK(player))
+                getServer().broadcast(
+                        Component
+                                .text(config.getString("messages.+afk", "%player% has gone afk")
+                                        .replace("%player%",player.getName()))
+                                .color(NamedTextColor.YELLOW)
+                );
+            else
+                getServer().broadcast(
+                        Component
+                                .text(config.getString("messages.-afk", "%player% has returned")
+                                        .replace("%player%",player.getName()))
+                                .color(NamedTextColor.YELLOW)
+                );
+        }
+    }
+
     public boolean isAFK(Player player) {
         return player.getPersistentDataContainer().getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) > config.getInt("afk.timer");
     }
 
     public void resetAfkTime(Player player) {
+        boolean wasAFK = false;
         if (isAFK(player)) {
+            wasAFK = true;
             removeLuckPermsTags(player);
-            if (config.getBoolean("messages.enabled"))
-                getServer().broadcast(Component.text(player.getName() + config.getString("messages.-afk")).color(NamedTextColor.YELLOW));
         }
+
         player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0);
+        if (wasAFK) broadcastAFKStatus(player);
     }
 
     public void updateAfkTime(Player player) {
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
-
         if (!isAFK(player)) {
+            PersistentDataContainer pdc = player.getPersistentDataContainer();
             pdc.set(AFK_TIMER_KEY, PersistentDataType.INTEGER, pdc.getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) + 1);
 
             // If not AFK before, are you now?
             if (isAFK(player)) {
                 addLuckPermsTags(player);
-                if (config.getBoolean("messages.enabled"))
-                    getServer().broadcast(Component.text(player.getName() + config.getString("messages.+afk")).color(NamedTextColor.YELLOW));
+                broadcastAFKStatus(player);
             }
         }
     }

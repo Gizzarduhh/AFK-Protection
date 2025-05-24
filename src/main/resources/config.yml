@@ -2,11 +2,11 @@
 afk:
   timer: 120
 
+# Use %player% for display name
 messages:
   enabled: true
-  +afk: " has gone afk"
-  -afk: " has returned"
-
+  +afk: "%player% has gone afk"
+  -afk: "%player% has returned"
 
 # Below options require LuckPerms
 prefix:
