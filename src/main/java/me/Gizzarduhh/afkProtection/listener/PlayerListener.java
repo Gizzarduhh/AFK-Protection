@@ -35,12 +35,12 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    void onPlayerInteract(PlayerInteractEvent event){
+    void onPlayerInput(PlayerInputEvent event){
         plugin.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
-    void onPlayerMove(PlayerMoveEvent event){
+    void onPlayerInteract(PlayerInteractEvent event){
         plugin.resetAfkTime(event.getPlayer());
     }
 
