@@ -41,15 +41,17 @@ public final class AFKProtection extends JavaPlugin {
 
     public void clearData(Player player) {
         player.getPersistentDataContainer().remove(AFK_TIMER_KEY);
-        removeLuckPermsTags(player);
+        removeAFKEffects(player);
     }
 
-    public void addLuckPermsTags(Player player) {
+    public void addAFKEffects(Player player) {
+        player.setCollidable(false);
         if (luckPermsAPI != null)
             luckPermsAPI.addTags(player);
     }
 
-    public void removeLuckPermsTags(Player player) {
+    public void removeAFKEffects(Player player) {
+        player.setCollidable(true);
         if (luckPermsAPI != null)
             luckPermsAPI.removeTags(player);
     }
@@ -81,7 +83,7 @@ public final class AFKProtection extends JavaPlugin {
         boolean wasAFK = false;
         if (isAFK(player)) {
             wasAFK = true;
-            removeLuckPermsTags(player);
+            removeAFKEffects(player);
         }
 
         player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0);
@@ -95,7 +97,7 @@ public final class AFKProtection extends JavaPlugin {
 
             // If not AFK before, are you now?
             if (isAFK(player)) {
-                addLuckPermsTags(player);
+                addAFKEffects(player);
                 broadcastAFKStatus(player);
             }
         }
