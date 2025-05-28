@@ -21,11 +21,21 @@ public class LuckPermsAPI
     public void addTags(Player player) {
         User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
         if (plugin.getConfig().getBoolean("prefix.enabled")) {
-            user.data().add(PrefixNode.builder(plugin.getConfig().getString("prefix.value", ""), plugin.getConfig().getInt("prefix.weight")).value(true).build());
+            user.data()
+                    .add(PrefixNode.builder(
+                            plugin.getConfig().getString("prefix.value", ""),
+                            plugin.getConfig().getInt("prefix.weight", 1))
+                            .value(true)
+                            .build());
             luckPerms.getUserManager().saveUser(user);
         }
         if (plugin.getConfig().getBoolean("suffix.enabled")) {
-            user.data().add(SuffixNode.builder(plugin.getConfig().getString("suffix.value", ""),plugin.getConfig().getInt("suffix.weight")).value(true).build());
+            user.data()
+                    .add(SuffixNode.builder(
+                            plugin.getConfig().getString("suffix.value", ""),
+                            plugin.getConfig().getInt("suffix.weight", 1))
+                            .value(true)
+                            .build());
             luckPerms.getUserManager().saveUser(user);
         }
     }
@@ -33,11 +43,21 @@ public class LuckPermsAPI
     public void removeTags(Player player) {
         User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
         if (plugin.getConfig().getBoolean("prefix.enabled")) {
-            user.data().remove(PrefixNode.builder(plugin.getConfig().getString("prefix.value", ""),plugin.getConfig().getInt("prefix.weight")).value(true).build());
+            user.data()
+                    .remove(PrefixNode.builder(
+                            plugin.getConfig().getString("prefix.value", ""),
+                            plugin.getConfig().getInt("prefix.weight", 1))
+                            .value(true)
+                            .build());
             luckPerms.getUserManager().saveUser(user);
         }
         if (plugin.getConfig().getBoolean("suffix.enabled")) {
-            user.data().remove(SuffixNode.builder(plugin.getConfig().getString("suffix.value", ""),plugin.getConfig().getInt("suffix.weight")).value(true).build());
+            user.data()
+                    .remove(SuffixNode.builder(
+                            plugin.getConfig().getString("suffix.value", ""),
+                            plugin.getConfig().getInt("suffix.weight", 1))
+                            .value(true)
+                            .build());
             luckPerms.getUserManager().saveUser(user);
         }
     }

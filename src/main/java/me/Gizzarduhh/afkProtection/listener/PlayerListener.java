@@ -2,12 +2,12 @@ package me.Gizzarduhh.afkProtection.listener;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.Gizzarduhh.afkProtection.AFKProtection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
@@ -19,13 +19,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity().getType() == EntityType.PLAYER && plugin.isAFK((Player) event.getEntity()))
+        if (event.getEntity() instanceof Player player && plugin.isAFK(player))
             event.setCancelled(true);
     }
 
     @EventHandler
     void onEntityTarget(EntityTargetEvent event) {
-        if (event.getTarget() != null && event.getTarget().getType() == EntityType.PLAYER && plugin.isAFK((Player) event.getTarget()))
+        if (event.getTarget() instanceof Player player && plugin.isAFK(player))
             event.setCancelled(true);
     }
 
@@ -45,17 +45,33 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerInventoryClick(InventoryClickEvent event) {
+        if (event.getWhoClicked() instanceof Player player)
+            plugin.resetAfkTime(player);
+    }
+
+    @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        plugin.resetAfkTime(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        plugin.resetAfkTime(event.getPlayer());
+    }
+
+    @EventHandler
     void onPlayerJoin(PlayerJoinEvent event){
-        plugin.clearData(event.getPlayer());
+        plugin.cleanup(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerQuit(PlayerQuitEvent event){
-        plugin.clearData(event.getPlayer());
+        plugin.cleanup(event.getPlayer());
     }
 
     @EventHandler
     void onPlayerKick(PlayerKickEvent event){
-        plugin.clearData(event.getPlayer());
+        plugin.cleanup(event.getPlayer());
     }
 }

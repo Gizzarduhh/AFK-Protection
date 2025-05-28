@@ -2,6 +2,7 @@ package me.Gizzarduhh.afkProtection;
 
 import me.Gizzarduhh.afkProtection.hook.LuckPermsAPI;
 import me.Gizzarduhh.afkProtection.listener.PlayerListener;
+import me.Gizzarduhh.afkProtection.task.AFKTimer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
@@ -36,10 +37,10 @@ public final class AFKProtection extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getServer().getOnlinePlayers().forEach(this::clearData);
+        getServer().getOnlinePlayers().forEach(this::cleanup);
     }
 
-    public void clearData(Player player) {
+    public void cleanup(Player player) {
         player.getPersistentDataContainer().remove(AFK_TIMER_KEY);
         removeLuckPermsTags(player);
     }

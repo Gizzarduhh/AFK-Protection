@@ -1,4 +1,6 @@
-package me.Gizzarduhh.afkProtection;
+package me.Gizzarduhh.afkProtection.task;
+
+import me.Gizzarduhh.afkProtection.AFKProtection;
 
 public class AFKTimer implements Runnable {
 
