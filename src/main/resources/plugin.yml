@@ -3,3 +3,11 @@ version: '1.1'
 main: me.Gizzarduhh.afkProtection.AFKProtection
 api-version: '1.21'
 softdepend: [LuckPerms]
+
+commands:
+  afk:
+    description: Go afk without waiting
+permissions:
+  afkprotection.command.afk:
+    default: true
+    description: Use /afk command

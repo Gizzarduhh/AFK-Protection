@@ -6,11 +6,16 @@ import me.Gizzarduhh.afkProtection.task.AFKTimer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 
 public final class AFKProtection extends JavaPlugin {
@@ -32,6 +37,18 @@ public final class AFKProtection extends JavaPlugin {
         // Listener and Timer
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new AFKTimer(this), 20, 20);
+
+        // Command
+        PluginCommand afkCommand = getCommand("afk");
+        if (afkCommand != null) {
+            afkCommand.setExecutor((commandSender, command, s, strings) -> {
+                if (!(commandSender instanceof Player player)) {
+                    return false;
+                }
+                player.getPersistentDataContainer().set(AFK_TIMER_KEY, PersistentDataType.INTEGER, config.getInt("afk.timer"));
+                return true;
+            });
+        }
     }
 
     @Override
