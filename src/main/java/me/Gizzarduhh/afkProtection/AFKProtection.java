@@ -1,6 +1,7 @@
 package me.Gizzarduhh.afkProtection;
 
 import me.Gizzarduhh.afkProtection.hook.LuckPermsAPI;
+import me.Gizzarduhh.afkProtection.hook.PlaceholderAPIExpansion;
 import me.Gizzarduhh.afkProtection.listener.PlayerListener;
 import me.Gizzarduhh.afkProtection.task.AFKTimer;
 import net.kyori.adventure.text.Component;
@@ -33,6 +34,13 @@ public final class AFKProtection extends JavaPlugin {
         // LuckPerms API
         if (getServer().getPluginManager().isPluginEnabled("LuckPerms"))
             luckPermsAPI = new LuckPermsAPI(this);
+
+        // PlaceholderAPI
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            PlaceholderAPIExpansion placeholderAPIExpansion = new PlaceholderAPIExpansion(this);
+            placeholderAPIExpansion.register();
+        }
+
 
         // Listener and Timer
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);

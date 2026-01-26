@@ -2,7 +2,9 @@ name: AFKProtection
 version: '1.1'
 main: me.Gizzarduhh.afkProtection.AFKProtection
 api-version: '1.21'
-softdepend: [LuckPerms]
+softdepend:
+- LuckPerms
+- PlaceholderAPI
 
 commands:
   afk:

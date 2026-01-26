@@ -1,8 +1,7 @@
 A Paper MC Plugin that prevents players from being targeted or damaged while AFK.
 Has configurable timer, messages, prefixes, and suffixes!
 
-LuckPerms is needed for suffix/prefix.
-
+LuckPerms or PlaceholderAPI is needed for suffix/prefix.
 
 Default Config:
 ```yaml
@@ -26,4 +25,15 @@ suffix:
   enabled: false
   value: "💤"
   weight: 1
+
+# Value of prefix and suffix can be accessed if PlaceholderAPI is installed.
+# ...even is LuckPerms is not installed.
+# Placeholders:
+#   %afkprotection_prefix%` - configured prefix
+#   %afkprotection_suffix%` - configured suffix
+#   %afkprotection_isAFK%` - trueValue or trueValue, if executing player is AFK
+#   %afkprotection_isAFK_<player>%` - trueValue or trueValue, if player is AFK
+placeholder:
+  trueValue: "true"
+  falseValue: "false"
 ```
