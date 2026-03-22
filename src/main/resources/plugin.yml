@@ -1,5 +1,5 @@
 name: AFKProtection
-version: '1.1'
+version: '1.2-SNAPSHOT'
 main: me.Gizzarduhh.afkProtection.AFKProtection
 api-version: '1.21'
 softdepend:
@@ -8,7 +8,7 @@ softdepend:
 
 commands:
   afk:
-    description: Go afk without waiting
+    description: Set yourself as AFK faster.
 permissions:
   afkprotection.command.afk:
     default: true
