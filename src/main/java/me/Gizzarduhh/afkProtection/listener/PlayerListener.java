@@ -19,59 +19,48 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player player && plugin.isAFK(player))
+        if (event.getEntity() instanceof Player player && plugin.afkTimer.isAFK(player))
             event.setCancelled(true);
     }
 
     @EventHandler
     void onEntityTarget(EntityTargetEvent event) {
-        if (event.getTarget() instanceof Player player && plugin.isAFK(player))
+        if (event.getTarget() instanceof Player player && plugin.afkTimer.isAFK(player))
             event.setCancelled(true);
     }
 
     @EventHandler
-    void onPlayerChat(AsyncChatEvent event){
-        plugin.resetAfkTime(event.getPlayer());
+    void onPlayerChat(AsyncChatEvent event) {
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
-    void onPlayerInput(PlayerInputEvent event){
-        plugin.resetAfkTime(event.getPlayer());
+    void onPlayerInput(PlayerInputEvent event) {
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
-    void onPlayerInteract(PlayerInteractEvent event){
-        plugin.resetAfkTime(event.getPlayer());
+    void onPlayerInteract(PlayerInteractEvent event) {
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player player)
-            plugin.resetAfkTime(player);
+            plugin.afkTimer.resetAfkTime(player);
     }
 
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        plugin.resetAfkTime(event.getPlayer());
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
-        plugin.resetAfkTime(event.getPlayer());
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event)  {
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
-
     @EventHandler
     void onPlayerJoin(PlayerJoinEvent event){
-        plugin.cleanup(event.getPlayer());
-    }
-
-    @EventHandler
-    void onPlayerQuit(PlayerQuitEvent event){
-        plugin.cleanup(event.getPlayer());
-    }
-
-    @EventHandler
-    void onPlayerKick(PlayerKickEvent event){
-        plugin.cleanup(event.getPlayer());
+        plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 }
