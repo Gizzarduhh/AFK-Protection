@@ -5,11 +5,3 @@ api-version: '1.21'
 softdepend:
 - LuckPerms
 - PlaceholderAPI
-
-commands:
-  afk:
-    description: Set yourself as AFK faster.
-permissions:
-  afkprotection.command.afk:
-    default: true
-    description: Use /afk command
