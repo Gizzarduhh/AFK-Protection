@@ -1,74 +1,74 @@
-package me.Gizzarduhh.afkProtection.task;
+package me.gizzarduhh.afkprotection.task;
 
-import me.Gizzarduhh.afkProtection.AFKProtection;
+import me.gizzarduhh.afkprotection.AfkProtection;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-public class AFKTimer implements Runnable {
-    private final AFKProtection plugin;
-    private final NamespacedKey AFK_TIMER_KEY;
+public class AfkTimer implements Runnable {
+    private final AfkProtection plugin;
+    private final NamespacedKey afkTimerKey;
 
-    public AFKTimer(AFKProtection plugin) {
+    public AfkTimer(AfkProtection plugin) {
         this.plugin = plugin;
-        AFK_TIMER_KEY = new NamespacedKey(this.plugin, "afk_timer");
+        afkTimerKey = new NamespacedKey(this.plugin, "afk_timer");
     }
 
     public void run() {
         plugin.getServer().getOnlinePlayers().forEach(player -> {
             // Since we do not store an AFK status, we need to stop counting already AFK players
-            if (!isAFK(player)) {
+            if (!isAfk(player)) {
                 countAfkTime(player);
                 // After count, check and update status
-                if (isAFK(player)) {
+                if (isAfk(player)) {
                     plugin.addLuckPermsTags(player);
-                    plugin.broadcastAFKStatus(player);
+                    plugin.broadcastAfkStatus(player);
                 }
             }
         });
     }
 
     public void countAfkTime(Player player) {
-        if (!isAFK(player)) {
+        if (!isAfk(player)) {
             PersistentDataContainer pdc = player.getPersistentDataContainer();
             pdc.set(
-                    AFK_TIMER_KEY,
+                    afkTimerKey,
                     PersistentDataType.INTEGER,
-                    pdc.getOrDefault(AFK_TIMER_KEY, PersistentDataType.INTEGER, 0) + 1);
+                    pdc.getOrDefault(afkTimerKey, PersistentDataType.INTEGER, 0) + 1);
 
         }
     }
 
     public void resetAfkTime(Player player) {
         // Since we do not store an AFK status, we need to check status first
-        boolean wasAFK = isAFK(player);
+        boolean afk = isAfk(player);
         player.getPersistentDataContainer().set(
-                AFK_TIMER_KEY,
+                afkTimerKey,
                 PersistentDataType.INTEGER,
                 0);
-        if (wasAFK) {
+        if (afk) {
             plugin.removeLuckPermsTags(player);
-            plugin.broadcastAFKStatus(player);
+            plugin.broadcastAfkStatus(player);
         }
     }
 
-    public void setAFKTime(Player player, int time) {
+    public void setAfkTime(Player player, int time) {
         player.getPersistentDataContainer().set(
-                AFK_TIMER_KEY,
+                afkTimerKey,
                 PersistentDataType.INTEGER,
                 time);
     }
 
-    public int getAFKTime(Player player) {
+    public int getAfkTime(Player player) {
         return player.getPersistentDataContainer().getOrDefault(
-                AFK_TIMER_KEY,
+                afkTimerKey,
                 PersistentDataType.INTEGER, 0);
     }
 
-    public boolean isAFK(Player player) {
+    public boolean isAfk(Player player) {
         return player.getPersistentDataContainer().getOrDefault(
-                AFK_TIMER_KEY,
+                afkTimerKey,
                 PersistentDataType.INTEGER,
                 0) > plugin.getConfig().getInt("afk.timer");
     }

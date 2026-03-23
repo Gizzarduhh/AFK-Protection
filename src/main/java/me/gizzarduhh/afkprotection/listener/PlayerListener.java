@@ -1,7 +1,7 @@
-package me.Gizzarduhh.afkProtection.listener;
+package me.gizzarduhh.afkprotection.listener;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.Gizzarduhh.afkProtection.AFKProtection;
+import me.gizzarduhh.afkprotection.AfkProtection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,21 +12,24 @@ import org.bukkit.event.player.*;
 
 public class PlayerListener implements Listener {
 
-    private final AFKProtection plugin;
+    private final AfkProtection plugin;
 
-    public PlayerListener(AFKProtection plugin)
-    {this.plugin = plugin;}
+    public PlayerListener(AfkProtection plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player player && plugin.afkTimer.isAFK(player))
+        if (event.getEntity() instanceof Player player && plugin.afkTimer.isAfk(player)) {
             event.setCancelled(true);
+        }
     }
 
     @EventHandler
     void onEntityTarget(EntityTargetEvent event) {
-        if (event.getTarget() instanceof Player player && plugin.afkTimer.isAFK(player))
+        if (event.getTarget() instanceof Player player && plugin.afkTimer.isAfk(player)) {
             event.setCancelled(true);
+            }
     }
 
     @EventHandler

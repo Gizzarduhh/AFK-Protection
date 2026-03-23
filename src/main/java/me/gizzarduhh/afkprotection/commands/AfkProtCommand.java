@@ -1,14 +1,15 @@
-package me.Gizzarduhh.afkProtection.commands;
+package me.gizzarduhh.afkprotection.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import me.Gizzarduhh.afkProtection.AFKProtection;
+import me.gizzarduhh.afkprotection.AfkProtection;
 
-public class AFKProtCommand {
-    private final AFKProtection plugin;
+public class AfkProtCommand {
+    private final AfkProtection plugin;
 
-    public AFKProtCommand(AFKProtection plugin) {
+    public AfkProtCommand(AfkProtection plugin) {
         this.plugin = plugin;
     }
 
@@ -18,12 +19,14 @@ public class AFKProtCommand {
                         .requires(source ->
                                 source.getSender().hasPermission("afkprotection.command.reload"))
                         .executes(ctx -> {
+                            // Reset everyone's timer
+                            plugin.getServer().getOnlinePlayers().forEach(
+                                    plugin.afkTimer::resetAfkTime
+                            );
                             // Reload config
                             plugin.reloadConfig();
-                            // Reset everyone's timer
-                            plugin.getServer().getOnlinePlayers().forEach(plugin.afkTimer::resetAfkTime);
                             ctx.getSource().getSender().sendPlainMessage("AFKProtection reloaded!");
-                            return 1;
+                            return Command.SINGLE_SUCCESS;
                         })
                 );
     }

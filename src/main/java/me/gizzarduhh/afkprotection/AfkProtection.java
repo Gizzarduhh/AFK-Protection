@@ -1,21 +1,21 @@
-package me.Gizzarduhh.afkProtection;
+package me.gizzarduhh.afkprotection;
 
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import me.Gizzarduhh.afkProtection.commands.AFKCommand;
-import me.Gizzarduhh.afkProtection.commands.AFKProtCommand;
-import me.Gizzarduhh.afkProtection.hook.LuckPermsAPI;
-import me.Gizzarduhh.afkProtection.listener.PlayerListener;
-import me.Gizzarduhh.afkProtection.task.AFKTimer;
+import me.gizzarduhh.afkprotection.commands.AfkCommand;
+import me.gizzarduhh.afkprotection.commands.AfkProtCommand;
+import me.gizzarduhh.afkprotection.hook.LuckPermsAPI;
+import me.gizzarduhh.afkprotection.listener.PlayerListener;
+import me.gizzarduhh.afkprotection.task.AfkTimer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
-public final class AFKProtection extends JavaPlugin {
-    private LuckPermsAPI luckPermsAPI;
-    public AFKTimer afkTimer;
+public final class AfkProtection extends JavaPlugin {
+    private LuckPermsAPI luckPermsApi;
+    public AfkTimer afkTimer;
 
     @Override
     public void onEnable() {
@@ -23,8 +23,9 @@ public final class AFKProtection extends JavaPlugin {
         saveDefaultConfig();
 
         // LuckPerms API
-        if (getServer().getPluginManager().isPluginEnabled("LuckPerms"))
-            luckPermsAPI = new LuckPermsAPI(this);
+        if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+            luckPermsApi = new LuckPermsAPI(this);
+        }
 
         // PlaceholderAPI
         //if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -33,14 +34,14 @@ public final class AFKProtection extends JavaPlugin {
         //}
 
         // Listener and Timer
-        afkTimer = new AFKTimer(this);
+        afkTimer = new AfkTimer(this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, afkTimer, 20, 20);
 
         // Command
-        AFKCommand afkCommand = new AFKCommand(this);
-        AFKProtCommand afkProtCommand = new AFKProtCommand(this);
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+        AfkCommand afkCommand = new AfkCommand(this);
+        AfkProtCommand afkProtCommand = new AfkProtCommand(this);
+        getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register(afkCommand.createCommand().build());
             commands.register(afkProtCommand.createCommand().build());
@@ -51,36 +52,41 @@ public final class AFKProtection extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         getServer().getOnlinePlayers().forEach(
-                player -> afkTimer.setAFKTime(player, 0)
+                player -> afkTimer.setAfkTime(player, 0)
         );
     }
 
     public void addLuckPermsTags(Player player) {
-        if (luckPermsAPI != null)
-            luckPermsAPI.addTags(player);
+        if (luckPermsApi != null) {
+            luckPermsApi.addTags(player);
+        }
     }
 
     public void removeLuckPermsTags(Player player) {
-        if (luckPermsAPI != null)
-            luckPermsAPI.removeTags(player);
+        if (luckPermsApi != null) {
+            luckPermsApi.removeTags(player);
+            }
     }
 
-    public void broadcastAFKStatus(Player player) {
+    public void broadcastAfkStatus(Player player) {
         if (getConfig().getBoolean("messages.enabled")) {
-            if (afkTimer.isAFK(player))
+            if (afkTimer.isAfk(player))
                 getServer().broadcast(
                         Component
-                                .text(getConfig().getString("messages.+afk", "%player% has gone afk")
+                                .text(getConfig().getString(
+                                        "messages.+afk", "%player% has gone afk")
                                         .replace("%player%", player.getName()))
                                 .color(NamedTextColor.YELLOW)
                 );
-            else
+            else {
                 getServer().broadcast(
                         Component
-                                .text(getConfig().getString("messages.-afk", "%player% has returned")
+                                .text(getConfig().getString(
+                                        "messages.-afk", "%player% has returned")
                                         .replace("%player%", player.getName()))
                                 .color(NamedTextColor.YELLOW)
                 );
+            }
         }
     }
 }

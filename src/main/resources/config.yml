@@ -11,6 +11,8 @@ messages:
   enabled: true
   +afk: "%player% has gone afk"
   -afk: "%player% has returned"
+  pending: "AFK in %delay% seconds..."
+  canceled: "AFK canceled, you moved!"
 
 # Below options require LuckPerms
 prefix:
