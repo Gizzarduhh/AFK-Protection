@@ -6,45 +6,48 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.Gizzarduhh.afkProtection.AFKProtection;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class AFKCommand {
     private final AFKProtection plugin;
-    private final Configuration config;
 
     public AFKCommand(AFKProtection plugin) {
         this.plugin = plugin;
-        this.config = plugin.getConfig();
     }
 
     public LiteralArgumentBuilder<CommandSourceStack> createCommand() {
         return Commands.literal("afk")
-                .requires(source -> source.getSender().hasPermission("afkprotection.command.afk"))
+                .requires(source ->
+                        source.getSender().hasPermission("afkprotection.command.afk"))
                 .executes(this::AFKCommandLogic);
     }
 
     private int AFKCommandLogic(CommandContext<CommandSourceStack> ctx) {
         CommandSender sender = ctx.getSource().getSender();
         Entity executor = ctx.getSource().getExecutor();
-        int delay = config.getInt("afk.delay", 0);
-        int timerStart = config.getInt("afk.timer") - delay;
+        int delay = plugin.getConfig().getInt("afk.delay", 0);
+        int timerStart = plugin.getConfig().getInt("afk.timer") - delay;
 
 
-        // Can only be executed on players
-        if (!(executor instanceof Player player)) {
+        // Can only be executed on online players
+        if (!(executor instanceof Player player) || !player.isOnline()) {
             sender.sendPlainMessage("Only players can be AFK!");
+            return 0;
+        }
+        // Cannot already be afk
+        if (plugin.afkTimer.isAFK(player)) {
+            sender.sendPlainMessage("You are already AFK!");
             return 0;
         }
 
         // Start executors timer *delay* seconds away from afk status
         sender.sendPlainMessage("Going AFK in " + delay + " seconds...");
-        this.plugin.afkTimer.setAFKTime(player, timerStart);
+        plugin.afkTimer.setAFKTime(player, timerStart);
 
         // Notify the user if their afk was canceled
-        this.plugin.getServer().getScheduler().runTaskTimer(this.plugin, task -> {
-            if (!player.isOnline() || this.plugin.afkTimer.isAFK(player)) {
+        plugin.getServer().getScheduler().runTaskTimer(plugin, task -> {
+            if (!player.isOnline() || plugin.afkTimer.isAFK(player)) {
                 task.cancel();
             }
 

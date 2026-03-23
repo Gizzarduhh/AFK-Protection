@@ -2,7 +2,6 @@ package me.Gizzarduhh.afkProtection.task;
 
 import me.Gizzarduhh.afkProtection.AFKProtection;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -10,11 +9,9 @@ import org.bukkit.persistence.PersistentDataType;
 public class AFKTimer implements Runnable {
     private final AFKProtection plugin;
     private final NamespacedKey AFK_TIMER_KEY;
-    private final Configuration config;
 
     public AFKTimer(AFKProtection plugin) {
         this.plugin = plugin;
-        config = plugin.getConfig();
         AFK_TIMER_KEY = new NamespacedKey(this.plugin, "afk_timer");
     }
 
@@ -73,6 +70,6 @@ public class AFKTimer implements Runnable {
         return player.getPersistentDataContainer().getOrDefault(
                 AFK_TIMER_KEY,
                 PersistentDataType.INTEGER,
-                0) > config.getInt("afk.timer");
+                0) > plugin.getConfig().getInt("afk.timer");
     }
 }
