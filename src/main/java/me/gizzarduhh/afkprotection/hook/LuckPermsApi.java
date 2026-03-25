@@ -1,6 +1,6 @@
-package me.Gizzarduhh.afkProtection.hook;
+package me.gizzarduhh.afkprotection.hook;
 
-import me.Gizzarduhh.afkProtection.AFKProtection;
+import me.gizzarduhh.afkprotection.AfkProtection;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -8,12 +8,11 @@ import net.luckperms.api.node.types.PrefixNode;
 import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.entity.Player;
 
-public class LuckPermsAPI
-{
-    private final AFKProtection plugin;
+public class LuckPermsApi {
+    private final AfkProtection plugin;
     private static LuckPerms luckPerms;
 
-    public LuckPermsAPI(AFKProtection plugin) {
+    public LuckPermsApi(AfkProtection plugin) {
         this.plugin = plugin;
         luckPerms = LuckPermsProvider.get();
     }
