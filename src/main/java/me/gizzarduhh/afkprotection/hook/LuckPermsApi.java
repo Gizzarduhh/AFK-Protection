@@ -8,11 +8,11 @@ import net.luckperms.api.node.types.PrefixNode;
 import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.entity.Player;
 
-public class LuckPermsAPI {
+public class LuckPermsApi {
     private final AfkProtection plugin;
     private static LuckPerms luckPerms;
 
-    public LuckPermsAPI(AfkProtection plugin) {
+    public LuckPermsApi(AfkProtection plugin) {
         this.plugin = plugin;
         luckPerms = LuckPermsProvider.get();
     }

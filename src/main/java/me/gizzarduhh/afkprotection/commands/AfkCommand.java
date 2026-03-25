@@ -1,10 +1,11 @@
 package me.gizzarduhh.afkprotection.commands;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.gizzarduhh.afkprotection.AfkProtection;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,11 +17,12 @@ public class AfkCommand {
         this.plugin = plugin;
     }
 
-    public LiteralArgumentBuilder<CommandSourceStack> createCommand() {
+    public LiteralCommandNode<CommandSourceStack> createCommand() {
         return Commands.literal("afk")
                 .requires(source ->
                         source.getSender().hasPermission("afkprotection.command.afk"))
-                .executes(this::afkCommandLogic);
+                .executes(this::afkCommandLogic)
+                .build();
     }
 
     private int afkCommandLogic(CommandContext<CommandSourceStack> ctx) {
@@ -30,7 +32,12 @@ public class AfkCommand {
 
         // Can only be executed on online players
         if (!(executor instanceof Player player) || !player.isOnline()) {
-            sender.sendPlainMessage("Only players can be AFK!");
+            String failMsg = plugin.getConfig().getString(
+                    "messages.notaplayer",
+                    "&4Only players can be AFK!");
+
+            sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(failMsg));
+
             return 0;
         }
         // Cannot already be afk
@@ -44,10 +51,22 @@ public class AfkCommand {
             return 1;
         }
 
+        // Send AFK pending message
+        String pendingMsgRaw = plugin.getConfig().getString(
+                "messages.pending",
+                "&7Going AFK in " + delay + " seconds...");
+        String pendingMsgParsed = pendingMsgRaw.replace("%delay%", String.valueOf(delay))
+        .replace("%player%", executor.getName());
+
+        if (plugin.placeholderApi != null) {
+            pendingMsgParsed = plugin.placeholderApi.parse(player, pendingMsgParsed);
+        }
+
+        sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(pendingMsgParsed));
+
         // Start executors timer *delay* seconds away from afk status
         int timerStart = plugin.getConfig().getInt("afk.timer") - delay;
 
-        sender.sendPlainMessage("Going AFK in " + delay + " seconds...");
         plugin.afkTimer.setAfkTime(player, timerStart);
 
         // Notify the user if their afk was canceled
@@ -57,7 +76,16 @@ public class AfkCommand {
             }
 
             if (this.plugin.afkTimer.getAfkTime(player) < timerStart) {
-                sender.sendPlainMessage("AFK canceled, you have moved or interacted.");
+                String cancelMsgRaw = plugin.getConfig().getString(
+                        "messages.canceled",
+                        "&4AFK canceled, you moved!");
+                String cancelMsgParsed = cancelMsgRaw.replace("%player%", executor.getName());
+
+                if (plugin.placeholderApi != null) {
+                    cancelMsgParsed = plugin.placeholderApi.parse(player, cancelMsgParsed);
+                }
+
+                sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(cancelMsgParsed));
                 task.cancel();
             }
         }, 0, 2);

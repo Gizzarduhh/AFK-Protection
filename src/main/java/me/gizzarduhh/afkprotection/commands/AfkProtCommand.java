@@ -1,7 +1,7 @@
 package me.gizzarduhh.afkprotection.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.gizzarduhh.afkprotection.AfkProtection;
@@ -13,7 +13,7 @@ public class AfkProtCommand {
         this.plugin = plugin;
     }
 
-    public LiteralArgumentBuilder<CommandSourceStack> createCommand() {
+    public LiteralCommandNode<CommandSourceStack> createCommand() {
         return Commands.literal("afkprot")
                 .then(Commands.literal("reload")
                         .requires(source ->
@@ -28,6 +28,7 @@ public class AfkProtCommand {
                             ctx.getSource().getSender().sendPlainMessage("AFKProtection reloaded!");
                             return Command.SINGLE_SUCCESS;
                         })
-                );
+                )
+                .build();
     }
 }
