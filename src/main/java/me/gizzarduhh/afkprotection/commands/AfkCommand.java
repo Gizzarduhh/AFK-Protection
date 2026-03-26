@@ -56,7 +56,7 @@ public class AfkCommand {
                 "messages.pending",
                 "&7Going AFK in " + delay + " seconds...");
         String pendingMsgParsed = pendingMsgRaw.replace("%delay%", String.valueOf(delay))
-        .replace("%player%", executor.getName());
+        .replace("%player%", player.getName());
 
         if (plugin.placeholderApi != null) {
             pendingMsgParsed = plugin.placeholderApi.parse(player, pendingMsgParsed);

@@ -20,19 +20,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player player && plugin.afkTimer.isAfk(player)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    void onEntityTarget(EntityTargetEvent event) {
-        if (event.getTarget() instanceof Player player) {
+        if (event.getEntity() instanceof Player player) {
             if (plugin.afkTimer.isAfk(player)) {
                 event.setCancelled(true);
             } else {
                 plugin.afkTimer.resetAfkTime(player);
             }
+        }
+    }
+
+    @EventHandler
+    void onEntityTarget(EntityTargetEvent event) {
+        if (event.getTarget() instanceof Player player && plugin.afkTimer.isAfk(player)) {
+            event.setCancelled(true);
         }
     }
 
@@ -43,6 +43,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onPlayerInput(PlayerInputEvent event) {
+        if (event.getInput().isSprint()) return;
         plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
@@ -53,8 +54,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player player)
+        if (event.getWhoClicked() instanceof Player player) {
             plugin.afkTimer.resetAfkTime(player);
+        }
     }
 
     @EventHandler

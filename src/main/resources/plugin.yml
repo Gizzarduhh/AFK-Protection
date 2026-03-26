@@ -1,5 +1,5 @@
 name: AFKProtection
-version: '1.2.1'
+version: '1.2.2'
 main: me.gizzarduhh.afkprotection.AfkProtection
 api-version: '1.21'
 softdepend:
