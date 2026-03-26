@@ -2,6 +2,7 @@ package me.gizzarduhh.afkprotection.listener;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.gizzarduhh.afkprotection.AfkProtection;
+import org.bukkit.Input;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,7 +44,15 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onPlayerInput(PlayerInputEvent event) {
-        if (event.getInput().isSprint()) return;
+        Input input = event.getInput();
+        if (input.isSprint()
+                && !input.isForward()
+                && !input.isBackward()
+                && !input.isLeft()
+                && !input.isRight()
+                && !input.isJump()) {
+            return; // Ignore the sprint input
+        }
         plugin.afkTimer.resetAfkTime(event.getPlayer());
     }
 
