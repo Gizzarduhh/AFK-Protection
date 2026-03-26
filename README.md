@@ -1,7 +1,7 @@
 A Paper MC Plugin that prevents players from being targeted or damaged while AFK.
 Has configurable timer, messages, prefixes, and suffixes!
 
-LuckPerms is needed for suffix/prefix.
+LuckPerms and PlaceholderAPI optional.
 
 Default Config:
 ```yaml
@@ -10,7 +10,7 @@ Default Config:
 # Timer - # of seconds before a player is considered AFK
 # Delay - # of seconds before /afk activates, anti-cheese
 afk:
-  timer: 120
+  timer: 300
   delay: 5
 
 # Use %player% for display name, PlaceholderAPI optionally supported
@@ -23,10 +23,18 @@ messages:
   canceled: "&4AFK canceled, you moved!"
   notaplayer: "&4Only players can be AFK!"
 
+# Below option requires PlaceholderAPI
+# %afkprot_status% - returns true or false, useful for things like the TAB plugin's conditions.
+# %afkprot_tag% - returns tag if afk, recommended to use this over luckperms options
+papi:
+  status_true: "true"
+  status_false: "false"
+  tag: "&7[AFK]"
+
 # Below options require LuckPerms
 prefix:
   enabled: false
-  value: "[AFK]"
+  value: "&7[AFK]"
   weight: 1
 
 suffix:

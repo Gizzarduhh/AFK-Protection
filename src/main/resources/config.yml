@@ -16,10 +16,18 @@ messages:
   canceled: "&4AFK canceled, you moved!"
   notaplayer: "&4Only players can be AFK!"
 
+# Below option requires PlaceholderAPI
+# %afkprot_status% - returns true or false, useful for things like the TAB plugin's conditions.
+# %afkprot_tag% - returns tag if afk, recommended to use this over luckperms options
+papi:
+  status_true: "true"
+  status_false: "false"
+  tag: "&7[AFK]"
+
 # Below options require LuckPerms
 prefix:
   enabled: false
-  value: "[AFK]"
+  value: "&7[AFK]"
   weight: 1
 
 suffix:

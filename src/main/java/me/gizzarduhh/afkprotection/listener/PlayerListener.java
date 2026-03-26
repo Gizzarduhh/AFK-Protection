@@ -27,9 +27,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     void onEntityTarget(EntityTargetEvent event) {
-        if (event.getTarget() instanceof Player player && plugin.afkTimer.isAfk(player)) {
-            event.setCancelled(true);
+        if (event.getTarget() instanceof Player player) {
+            if (plugin.afkTimer.isAfk(player)) {
+                event.setCancelled(true);
+            } else {
+                plugin.afkTimer.resetAfkTime(player);
             }
+        }
     }
 
     @EventHandler

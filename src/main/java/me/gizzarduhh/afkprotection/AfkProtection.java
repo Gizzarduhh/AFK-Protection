@@ -3,6 +3,7 @@ package me.gizzarduhh.afkprotection;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.gizzarduhh.afkprotection.commands.AfkCommand;
 import me.gizzarduhh.afkprotection.commands.AfkProtCommand;
+import me.gizzarduhh.afkprotection.hook.AFKPlaceholderExpansion;
 import me.gizzarduhh.afkprotection.hook.LuckPermsApi;
 import me.gizzarduhh.afkprotection.hook.PlaceholderApi;
 import me.gizzarduhh.afkprotection.listener.PlayerListener;
@@ -31,7 +32,9 @@ public final class AfkProtection extends JavaPlugin {
         // PlaceholderAPI
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             placeholderApi = new PlaceholderApi();
+            new AFKPlaceholderExpansion(this).register();
             getLogger().info("Successfully hooked into PlaceholderAPI!");
+
         }
 
         // Listener and Timer
